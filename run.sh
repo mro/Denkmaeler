@@ -11,8 +11,9 @@ dst="build"
 ## Prepare build dir
 ######################################################################
 
-# for gemeinde in 09/1/62/000 09/1/89/159 ; do mkdir -p "${dst}/${gemeinde}" ; done
+# for gemeinde in 09/4/77/148 09/1/62/000 09/1/89/159 ; do mkdir -p "${dst}/${gemeinde}" ; done
 for gemeinde in `cut -d / -f 2-5 bayern-ags.csv` ; do mkdir -p "${dst}/${gemeinde}" ; done
+sh geonames.sh
 
 cat > "${dst}/README.txt" <<FOO
 Die Gemeinden in Deutschland nach dem Amtlichen Gemeindeschlüssel
@@ -46,11 +47,13 @@ xml2ttl="denkmaeler-xml2ttl-cmd/denkmaeler-xml2ttl"-*-*-"0.0.1"
 for gemeinde in `ls -d build/??/?/??/??? | cut -d / -f2-`
 do
   printf "%s " "${gemeinde}"
+  geonames_url="$(cat "${dst}/${gemeinde}/geonames.url")"
   pdf="${dst}/${gemeinde}/denkmal-liste.pdf"
   xml="${dst}/${gemeinde}/denkmal-liste.xml"
   ttl="${dst}/${gemeinde}/denkmal-liste.ttl"
   rdf="${dst}/${gemeinde}/denkmal-liste.rdf"
   nummer="$(echo ${gemeinde} | cut -d / -f 2- | tr -d "/")"
+  bayern_prefix="09"
   url="http://geodaten.bayern.de/denkmal_static_data/externe_denkmalliste/pdf/denkmalliste_merge_${nummer}.pdf"
   deploy_url="http://linkeddata.mro.name/open/country/DE/AGS/${gemeinde}/"
   base_url="http://geodaten.bayern.de/"
@@ -61,11 +64,14 @@ do
 @prefix cc: <http://creativecommons.org/ns#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix dct: <http://purl.org/dc/terms/> .
+@prefix gn: <http://www.geonames.org/ontology#> .
 
 <${deploy_url}about.rdf>
     cc:attributionName "🏰"^^<http://www.w3.org/2001/XMLSchema#string> ;
     cc:attributionURL <${deploy_url}about.rdf> ;
     cc:license <http://creativecommons.org/licenses/by/3.0/> ;
+    dct:spatial <${geonames_url}> ;
+    gn:admin4Code "${bayern_prefix}${nummer}" ;
     dct:title "todo" ;
     dct:created "2016-08-31"^^<http://www.w3.org/2001/XMLSchema#date> ;
     dct:source <https://web.archive.org/web/20090411151155/http://www.destatis.de/jetspeed/portal/cms/Sites/destatis/Internet/DE/Content/Statistiken/Regionales/Gemeindeverzeichnis/Administrativ/AdministrativeUebersicht,templateId=renderPrint.psml> ;
@@ -102,4 +108,4 @@ ls "${dst}"/??/?/??/*/*.rdf 1>&2
 ## deploy txt and RDF.
 ######################################################################
 
-rsync -avPz --delete --delete-excluded --exclude .??* --exclude *.pdf --exclude *.xml --exclude *.ttl "build/" vario:~/"mro.name/linkeddata/open/country/DE/AGS/"
+rsync -avPz --delete --delete-excluded --exclude .??* --exclude *.pdf --exclude *.url --exclude *.xml --exclude *.ttl "build/" vario:~/"mro.name/linkeddata/open/country/DE/AGS/"
