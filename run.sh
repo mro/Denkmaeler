@@ -63,7 +63,7 @@ do
 @prefix dct: <http://purl.org/dc/terms/> .
 
 <${deploy_url}about.rdf>
-    cc:attributionName "..."^^<http://www.w3.org/2001/XMLSchema#string> ;
+    cc:attributionName "🏰"^^<http://www.w3.org/2001/XMLSchema#string> ;
     cc:attributionURL <${deploy_url}about.rdf> ;
     cc:license <http://creativecommons.org/licenses/by/3.0/> ;
     dct:title "todo" ;
@@ -73,10 +73,11 @@ do
     foaf:primaryTopic "" .
 
 <${deploy_url}denkmal-liste.rdf>
-    cc:attributionName "..."^^<http://www.w3.org/2001/XMLSchema#string> ;
+    cc:attributionName "🏰"^^<http://www.w3.org/2001/XMLSchema#string> ;
     cc:attributionURL <${deploy_url}denkmal-liste.rdf> ;
     cc:license <http://creativecommons.org/licenses/by/3.0/> ;
     dct:source <${url}> ;
+    dct:relation <http://github.com/mro/Denkmaeler> ;
     dct:created "2016-08-31"^^<http://www.w3.org/2001/XMLSchema#date> ;
     dct:modified "$(date +%F)"^^<http://www.w3.org/2001/XMLSchema#date> ;
     a foaf:Document ;
