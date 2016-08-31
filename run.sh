@@ -45,6 +45,7 @@ xml2ttl="denkmaeler-xml2ttl-cmd/denkmaeler-xml2ttl"-*-*-"0.0.1"
 
 for gemeinde in `ls -d build/??/?/??/??? | cut -d / -f2-`
 do
+  printf "%s " "${gemeinde}"
   pdf="${dst}/${gemeinde}/denkmal-liste.pdf"
   xml="${dst}/${gemeinde}/denkmal-liste.xml"
   ttl="${dst}/${gemeinde}/denkmal-liste.ttl"
@@ -55,7 +56,7 @@ do
   base_url="http://geodaten.bayern.de/"
   http_code="$(curl --silent --write-out "%{http_code}" --location --remote-time --create-dirs --output "${pdf}" --time-cond "${pdf}" --url "${url}")"
   if [ "200" = "${http_code}" ] ; then
-  	cat > "${ttl}" <<FOO
+    cat > "${ttl}" <<FOO
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix cc: <http://creativecommons.org/ns#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
@@ -86,7 +87,7 @@ FOO
     pdftohtml -i -stdout -xml "${pdf}" > "${xml}" \
     && ${xml2ttl} < "${xml}" >> "${ttl}" \
     && touch -r "${pdf}" "${ttl}" \
-    && rapper -i turtle -o rdfxml-abbrev "${ttl}" > "${rdf}" \
+    && rapper --quiet -i turtle -o rdfxml-abbrev "${ttl}" > "${rdf}" \
     && touch -r "${pdf}" "${rdf}"
   else
     echo "ignore http_code ${http_code} ${url}"
