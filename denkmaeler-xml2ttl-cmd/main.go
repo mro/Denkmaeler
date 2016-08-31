@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"log" // log.Fatal
 	"os"
+	"strings"
 )
 
 func main() {
@@ -49,7 +50,7 @@ func main() {
 		for _, a := range d.adresse {
 			fmt.Printf("  c:street \"\"\"%s\"\"\" ;\n", a)
 		}
-		fmt.Printf("  dct:description \"\"\"%s\"\"\" ;\n", d.beschreibung)
+		fmt.Printf("  dct:description \"\"\"%s\"\"\" ;\n", strings.Replace(d.beschreibung, "\"", "\\\"", -1))
 		fmt.Printf(".\n")
 	}
 }
