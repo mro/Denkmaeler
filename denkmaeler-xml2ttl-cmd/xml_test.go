@@ -127,7 +127,7 @@ func TestFineFromRawSmall(t *testing.T) {
 	{
 		d := ds[0]
 		assert.Equal(t, "D-1-89-159-30", d.aktennummer, "soso")
-		assert.Equal(t, 189159, d.gemeindeschlüssel, "soso")
+		assert.Equal(t, "09 1 89 159", d.gemeindeschlüssel, "soso")
 		assert.Equal(t, "Baudenkmäler", d.typ, "soso")
 		assert.Equal(t, 1, len(d.adresse), "soso")
 		assert.Equal(t, "Achenzipf", d.adresse[0], "soso")
@@ -138,7 +138,7 @@ func TestFineFromRawSmall(t *testing.T) {
 	{
 		d := ds[41]
 		assert.Equal(t, "D-1-8140-0209", d.aktennummer, "soso")
-		assert.Equal(t, 189159, d.gemeindeschlüssel, "soso")
+		assert.Equal(t, "09 1 89 159", d.gemeindeschlüssel, "soso")
 		assert.Equal(t, "Bodendenkmäler", d.typ, "soso")
 		assert.Equal(t, 1, len(d.adresse), "soso")
 		assert.Equal(t, "", d.adresse[0], "soso")
@@ -159,7 +159,7 @@ func TestFineFromRawLarge(t *testing.T) {
 	{
 		d := ds[0]
 		assert.Equal(t, "E-1-62-000-30", d.aktennummer, "soso")
-		assert.Equal(t, 162000, d.gemeindeschlüssel, "soso")
+		assert.Equal(t, "09 1 62 000", d.gemeindeschlüssel, "soso")
 		assert.Equal(t, "Baudenkmäler", d.typ, "soso")
 		assert.Equal(t, 1, len(d.adresse), "soso")
 		assert.Equal(t, "Ensemble Wohnanlagen am Loehleplatz", d.adresse[0], "soso")
@@ -170,7 +170,7 @@ func TestFineFromRawLarge(t *testing.T) {
 	{
 		d := ds[6812]
 		assert.Equal(t, "D-1-7734-0101", d.aktennummer, "soso")
-		assert.Equal(t, 162000, d.gemeindeschlüssel, "soso")
+		assert.Equal(t, "09 1 62 000", d.gemeindeschlüssel, "soso")
 		assert.Equal(t, "Bodendenkmäler", d.typ, "soso")
 		assert.Equal(t, 1, len(d.adresse), "soso")
 		assert.Equal(t, "", d.adresse[0], "soso")

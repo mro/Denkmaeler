@@ -25,20 +25,21 @@ import (
 	// "log"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 )
+
+const bayern = "09" // https://de.wikipedia.org/wiki/Amtlicher_Gemeindeschl%C3%BCssel
 
 type gemeinde struct {
 	regierungsbezirk  string
 	landkreis         string
 	gemeinde          string
-	gemeindeschlüssel int
+	gemeindeschlüssel string
 }
 
 type denkmal struct {
 	aktennummer       string
-	gemeindeschlüssel int      // https://de.wikipedia.org/wiki/Amtlicher_Gemeindeschl%C3%BCssel
+	gemeindeschlüssel string   // https://de.wikipedia.org/wiki/Amtlicher_Gemeindeschl%C3%BCssel
 	typ               string   // baudenkmäler / bodendenkmäler
 	adresse           []string //
 	beschreibung      string
@@ -63,7 +64,7 @@ func (d *denkmal) finish(l *[]denkmal) {
 func fineFromRaw(pdf pdf2xml) ([]denkmal, error) {
 	var ret []denkmal
 	var d denkmal
-	var gemeindeschlüssel int
+	var gemeindeschlüssel string
 	var typ string
 	var oldTop int32
 	var g gemeinde
@@ -99,9 +100,9 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, error) {
 				case nil != m:
 					d.finish(&ret)
 					// log.Printf("%d b='%s' v='%s'\n", text.Font, text.Bold, text.Value)
-					if 0 == gemeindeschlüssel && "" != m[1] {
+					if "" == gemeindeschlüssel && "" != m[1] {
 						// log.Printf("🔑 %s\n", m[1])
-						gemeindeschlüssel, _ = strconv.Atoi(m[2] + m[3] + m[4])
+						gemeindeschlüssel = bayern + " " + m[2] + " " + m[3] + " " + m[4]
 						g.gemeindeschlüssel = gemeindeschlüssel
 					}
 					d = denkmal{

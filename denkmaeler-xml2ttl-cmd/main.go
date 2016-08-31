@@ -44,7 +44,7 @@ func main() {
 
 	for _, d := range ds {
 		fmt.Printf("<http://geodaten.bayern.de/denkmal#%s>\n", d.aktennummer)
-		fmt.Printf("  gn:admin4Code %d ;\n", d.gemeindeschlüssel) // http://gis.stackexchange.com/q/7688
+		fmt.Printf("  gn:admin4Code \"%s\" ;\n", d.gemeindeschlüssel) // http://gis.stackexchange.com/q/7688
 		fmt.Printf("  dct:subject <http://www.geodaten.bayern.de/denkmaltyp#%s> ;\n", d.typ)
 		for _, a := range d.adresse {
 			fmt.Printf("  c:street \"\"\"%s\"\"\" ;\n", a)
