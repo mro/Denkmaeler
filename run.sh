@@ -6,10 +6,27 @@ pdftohtml 2>/dev/null
 
 dst="build"
 
+for gemeinde in 09/1/62/000 09/1/89/159 ; do mkdir -p "${dst}/${gemeinde}" ; done
+
+echo "Bundesland Bayern" > "${dst}/09/README.txt"
+echo "Regierungsbezirk Oberbayern" > "${dst}/09/1/README.txt"
+
+while IFS='/' read ignore bundesland regierungsbezirk landkreis gemeinde name
+do
+  if [ "" = "${landkreis}" ] ; then
+    echo "Regierungsbezirk ${name}" > "${dst}/${bundesland}/${regierungsbezirk}/README.txt"
+  else
+    if [ "" = "${gemeinde}" ] ; then
+      echo "Landkreis ${name}" > "${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/README.txt"
+    else
+      echo "Gemeinde ${name}" > "${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}/README.txt"
+    fi
+  fi
+done < oberbayern-ags.csv
+
+
 xml2ttl="denkmaeler-xml2ttl-cmd/denkmaeler-xml2ttl"-*-*-"0.0.1"
 [ -x ${xml2ttl} ] || { echo "I need the transformation tool, please run \$ sh build.sh" 1>&2 && exit 1; }
-
-for gemeinde in 09/1/62/000 09/1/89/159 ; do mkdir -p build/${gemeinde} ; done
 
 for gemeinde in `ls -d build/??/?/??/??? | cut -d / -f2-`
 do
@@ -31,4 +48,4 @@ done
 ls -Altr "${dst}"/*/*.ttl
 ls "${dst}"/*/*.ttl 1>&2
 
-rsync -avPz --delete --delete-excluded --exclude .??* --exclude *.pdf --exclude *.xml build/ vario:~/mro.name/linkeddata/open/country/DE/
+rsync -avPz --delete --delete-excluded --exclude .??* --exclude *.pdf --exclude *.xml build/ vario:~/mro.name/linkeddata/open/country/DE/AGS/
