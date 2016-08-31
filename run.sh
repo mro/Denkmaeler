@@ -6,7 +6,8 @@ pdftohtml 2>/dev/null
 
 dst="build"
 
-for gemeinde in 09/1/62/000 09/1/89/159 ; do mkdir -p "${dst}/${gemeinde}" ; done
+# for gemeinde in 09/1/62/000 09/1/89/159 ; do mkdir -p "${dst}/${gemeinde}" ; done
+for gemeinde in `cut -d / -f 2-5 bayern-ags.csv` ; do mkdir -p "${dst}/${gemeinde}" ; done
 
 echo "Bundesland Bayern" > "${dst}/09/README.txt"
 echo "Regierungsbezirk Oberbayern" > "${dst}/09/1/README.txt"
@@ -14,7 +15,7 @@ echo "Regierungsbezirk Oberbayern" > "${dst}/09/1/README.txt"
 while IFS='/' read ignore bundesland regierungsbezirk landkreis gemeinde name
 do
   if [ "" = "${landkreis}" ] ; then
-    echo "Regierungsbezirk ${name}" > "${dst}/${bundesland}/${regierungsbezirk}/README.txt"
+    echo "${name}" > "${dst}/${bundesland}/${regierungsbezirk}/README.txt"
   else
     if [ "" = "${gemeinde}" ] ; then
       echo "Landkreis ${name}" > "${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/README.txt"
@@ -22,7 +23,7 @@ do
       echo "Gemeinde ${name}" > "${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}/README.txt"
     fi
   fi
-done < oberbayern-ags.csv
+done < bayern-ags.csv
 
 
 xml2ttl="denkmaeler-xml2ttl-cmd/denkmaeler-xml2ttl"-*-*-"0.0.1"
