@@ -56,6 +56,9 @@ func (d *denkmal) finish(l *[]denkmal) {
 	for i, a := range d.adresse {
 		d.adresse[i] = strings.Trim(a, " .")
 	}
+	if 1 == len(d.adresse) && "" == d.adresse[0] {
+		d.adresse = []string{}
+	}
 	d.beschreibung = strings.TrimSpace(d.beschreibung)
 	*l = append(*l, *d)
 	d.isFinished = true

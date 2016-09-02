@@ -140,8 +140,7 @@ func TestFineFromRawSmall(t *testing.T) {
 		assert.Equal(t, "D-1-8140-0209", d.aktennummer, "soso")
 		assert.Equal(t, "09 1 89 159", d.gemeindeschlüssel, "soso")
 		assert.Equal(t, "Bodendenkmäler", d.typ, "soso")
-		assert.Equal(t, 1, len(d.adresse), "soso")
-		assert.Equal(t, "", d.adresse[0], "soso")
+		assert.Equal(t, 0, len(d.adresse), "soso")
 		assert.Equal(t, "Untertägige spätmittelalterliche und frühneuzeitliche Befunde im Bereich der Kath. Pfarrkirche St. Nikolaus in Übersee und ihrer Vorgängerbauten.", d.beschreibung, "soso")
 		assert.Equal(t, "nachqualifiziert", d.verfahrensstand, "soso")
 	}
@@ -172,8 +171,7 @@ func TestFineFromRawLarge(t *testing.T) {
 		assert.Equal(t, "D-1-7734-0101", d.aktennummer, "soso")
 		assert.Equal(t, "09 1 62 000", d.gemeindeschlüssel, "soso")
 		assert.Equal(t, "Bodendenkmäler", d.typ, "soso")
-		assert.Equal(t, 1, len(d.adresse), "soso")
-		assert.Equal(t, "", d.adresse[0], "soso")
+		assert.Equal(t, 0, len(d.adresse), "soso")
 		assert.Equal(t, "Grabhügel mit Bestattungen der Hallstattzeit sowie Siedlung vorgeschichtlicher Zeitstellung.", d.beschreibung, "soso")
 		assert.Equal(t, "nachqualifiziert", d.verfahrensstand, "soso")
 	}
