@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 cd "$(dirname "${0}")"
 
 curl --silent --location --remote-time --time-cond DE.zip --output DE.zip --url "http://download.geonames.org/export/dump/DE.zip"
@@ -16,8 +16,9 @@ do
 
   [ -d "${dir}" ] || continue
   # echo "${dir} http://sws.geonames.org/${geoname}/ ${name} ${level}"
-  printf "." 
-  echo "http://sws.geonames.org/${geoname}/" > "${dir}/geonames.url"
+  printf "."
+
+  [ -r "${dir}/geonames.url" ] || echo "http://sws.geonames.org/${geoname}/" > "${dir}/geonames.url"
 done
 
 # ls -Al build/??/?/??/???/geonames.url

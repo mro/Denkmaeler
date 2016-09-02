@@ -39,21 +39,28 @@ write_about() {
 FOO
   [ "" != "${geonames_url}" ] && echo "  dct:spatial <${geonames_url}> ;" >> "${dst}/${ags_dir}/about.ttl"
   echo "." >> "${dst}/${ags_dir}/about.ttl"
-
-  rapper --quiet --input turtle --output rdfxml-abbrev "${dst}/${ags_dir}/about.ttl" > "${dst}/${ags_dir}/about.rdf"
+  {
+    rapper --quiet --input turtle --output rdfxml-abbrev "${dst}/${ags_dir}/about.ttl" > "${dst}/${ags_dir}/about.rdf~"
+    diff -q "${dst}/${ags_dir}/about.rdf~" "${dst}/${ags_dir}/about.rdf" && cp "${dst}/${ags_dir}/about.rdf~" "${dst}/${ags_dir}/about.rdf"
+    rm "${dst}/${ags_dir}/about.rdf~"
+  } &
 }
+
+wait
 
 while IFS='/' read ignore bundesland regierungsbezirk landkreis gemeinde name
 do
   if [ "" = "${landkreis}" ] ; then
-    echo "${name}" > "${dst}/${bundesland}/${regierungsbezirk}/README.txt"
+    rme="${dst}/${bundesland}/${regierungsbezirk}/README.txt"
+    [ -r "${rme}" ] || echo "${name}" > "${rme}"
   else
     if [ "" = "${gemeinde}" ] ; then
-      echo "Landkreis ${name}" > "${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/README.txt"
+      rme="${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/README.txt"
+      [ -r "${rme}" ] || echo "Landkreis ${name}" > "${rme}"
       # write_about "${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}" "${name}" &
     else
-      echo "Gemeinde ${name}" > "${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}/README.txt"
-      write_about "${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}" "${name}" &
+      rme="${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}/README.txt"
+      [ -r "${rme}" ] || echo "Gemeinde ${name}" > "${rme}"
     fi
   fi
 done < bayern-ags.csv
