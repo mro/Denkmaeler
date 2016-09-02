@@ -25,7 +25,7 @@ FOO
 echo "Bundesland Bayern" > "${dst}/09/README.txt"
 echo "Regierungsbezirk Oberbayern" > "${dst}/09/1/README.txt"
 
-function write_about() {
+write_about() {
   ags_dir="${1}"
   title="${2}"
   geonames_url="$(cat "${dst}/${ags_dir}/geonames.url")"
@@ -35,7 +35,7 @@ function write_about() {
 @prefix gn: <http://www.geonames.org/ontology#> .
 <${deploy_base_url}${ags_dir}/>
   dct:title """${title}""" ;
-  gn:admin4Code "$(echo "${ags_dir}" | tr -d /)" ;
+  gn:admin4Code "$(echo "${ags_dir}" | tr / ' ')" ;
 FOO
   [ "" != "${geonames_url}" ] && echo "  dct:spatial <${geonames_url}> ;" >> "${dst}/${ags_dir}/about.ttl"
   echo "." >> "${dst}/${ags_dir}/about.ttl"
@@ -77,6 +77,7 @@ do
   url="http://geodaten.bayern.de/denkmal_static_data/externe_denkmalliste/pdf/denkmalliste_merge_${nummer}.pdf"
   deploy_url="${deploy_base_url}${gemeinde}/"
   base_url="http://geodaten.bayern.de/"
+  pdf="${file}.pdf"
   http_code="$(curl --user-agent http://github.com/mro/Denkmaeler --silent --write-out "%{http_code}" --location --remote-time --create-dirs --output "${pdf}" --time-cond "${pdf}" --url "${url}")"
   if [ "200" = "${http_code}" ] ; then
     {
@@ -113,7 +114,6 @@ do
   foaf:primaryTopic <${deploy_url}> .
 
 FOO
-      pdf="${file}.pdf"
       xml="${file}.xml"
       rdf="${file}.rdf"
       pdftohtml -i -stdout -xml "${pdf}" > "${xml}" \
