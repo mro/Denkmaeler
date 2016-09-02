@@ -80,7 +80,7 @@ for gemeinde in `ls -d build/??/?/??/??? | cut -d / -f2-`
 do
   printf "%s " "${gemeinde}"
   geonames_url="$(cat "${dst}/${gemeinde}/geonames.url")"
-  file="${dst}/${gemeinde}/denkmal-liste"
+  file="${dst}/${gemeinde}/denkmal"
   nummer="$(echo ${gemeinde} | cut -d / -f 2- | tr -d /)"
   bayern_prefix="09"
   url="http://geodaten.bayern.de/denkmal_static_data/externe_denkmalliste/pdf/denkmalliste_merge_${nummer}.pdf"
@@ -98,7 +98,7 @@ do
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix gn: <http://www.geonames.org/ontology#> .
 
-# <${deploy_url}denkmal-liste.rdf>
+# <${deploy_url}denkmal.rdf>
 #    dct:modified "$(date +%F)"^^<http://www.w3.org/2001/XMLSchema#date> .
 
 <${deploy_url}about.rdf>
@@ -113,9 +113,9 @@ do
   a foaf:Document ;
   foaf:primaryTopic <${deploy_url}> .
 
-<${deploy_url}denkmal-liste.rdf>
+<${deploy_url}denkmal.rdf>
   cc:attributionName "🏰"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  cc:attributionURL <${deploy_url}denkmal-liste.rdf> ;
+  cc:attributionURL <${deploy_url}denkmal.rdf> ;
   cc:license <http://creativecommons.org/licenses/by/3.0/> ;
   dct:source <${url}> ;
   dct:relation <http://github.com/mro/Denkmaeler> ;
@@ -130,7 +130,8 @@ FOO
       && ${xml2ttl} < "${xml}" >> "${ttl}" \
       && touch -r "${pdf}" "${ttl}" \
       && rapper --quiet -i turtle -o rdfxml-abbrev "${ttl}" > "${rdf}" \
-      && sed -i '1s:<.xml version=.*:<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="../../../../assets/denkmal-liste2html.xslt"?>:' "${rdf}" \
+      && sed -i '~' '1s:<.xml version=.*:<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="../../../../assets/denkmal2html.xslt"?>:' "${rdf}" \
+      && rm "${rdf}~" \
       && touch -r "${pdf}" "${rdf}"
     } &
   else

@@ -88,7 +88,7 @@
     </html>
   </xsl:template>
 
-  <xsl:template match="rdf:Description[starts-with(@rdf:about, 'http://geodaten.bayern.de/denkmal#')]">
+  <xsl:template match="rdf:Description[contains(@rdf:about, '/denkmal.rdf#')]">
     <xsl:variable name="ident" select="substring-after(@rdf:about, '#')"/>
     <dt id="{$ident}"><a href="#{$ident}"><xsl:value-of select="$ident"/></a></dt>
     <dd>

@@ -44,7 +44,7 @@ func main() {
 	fmt.Printf("\n")
 
 	for _, d := range ds {
-		fmt.Printf("<http://geodaten.bayern.de/denkmal#%s>\n", d.aktennummer)
+		fmt.Printf("<http://linkeddata.mro.name/open/country/DE/AGS/%s/denkmal.rdf#%s>\n", strings.Replace(d.gemeindeschlüssel, " ", "/", -1), d.aktennummer)
 		fmt.Printf("  dct:identifier \"%s\" ;\n", d.aktennummer)
 		fmt.Printf("  gn:admin4Code \"%s\" ;\n", d.gemeindeschlüssel) // http://gis.stackexchange.com/q/7688
 		fmt.Printf("  dct:subject <http://www.geodaten.bayern.de/denkmaltyp#%s> ;\n", d.typ)
