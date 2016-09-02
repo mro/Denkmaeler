@@ -130,7 +130,7 @@ FOO
       && ${xml2ttl} < "${xml}" >> "${ttl}" \
       && touch -r "${pdf}" "${ttl}" \
       && rapper --quiet -i turtle -o rdfxml-abbrev "${ttl}" > "${rdf}" \
-      && sed -i '~' '1s:<.xml version=.*:<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="../../../../assets/denkmal2html.xslt"?>:' "${rdf}" \
+      && sed -i'~' '1s:<.xml version=.*:<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="../../../../assets/denkmal2html.xslt"?>:' "${rdf}" \
       && rm "${rdf}~" \
       && touch -r "${pdf}" "${rdf}"
     } &
