@@ -61,13 +61,14 @@
   font-size: 9pt;
 }
         </style>
-        <title>
-          <h1>Denkmalliste <xsl:value-of select="foaf:Document/gn:admin4Code"/></h1>
-        </title>
+        <title>Denkmalliste <xsl:value-of select="foaf:Document/dct:title"/></title>
       </head>
       <body>
         <div class="container">
-          <h1>Denkmalliste <xsl:value-of select="foaf:Document/gn:admin4Code"/></h1>
+          <h1>Denkmalliste <xsl:value-of select="foaf:Document/dct:title"/></h1>
+          <p>
+          	<a href="{foaf:Document/dct:source[starts-with(@rdf:resource, 'http://geodaten.bayern.de/denkmal_static_data/externe_denkmalliste/')]/@rdf:resource}">Quelle</a>
+          </p>
 
           <h2 id="bau">Baudenkmäler</h2>
           <dl>
