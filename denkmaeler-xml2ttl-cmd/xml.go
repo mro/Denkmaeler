@@ -25,7 +25,9 @@ import (
 	// "log"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
+	"time"
 )
 
 const bayern = "09" // https://de.wikipedia.org/wiki/Amtlicher_Gemeindeschl%C3%BCssel
@@ -64,7 +66,22 @@ func (d *denkmal) finish(l *[]denkmal) {
 	d.isFinished = true
 }
 
-func fineFromRaw(pdf pdf2xml) ([]denkmal, error) {
+func mustAtoi(s string) int {
+	r, e := strconv.Atoi(s)
+	if nil != e {
+		panic(s)
+	}
+	return r
+}
+
+func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, error) {
+	tz, err := time.LoadLocation("Europe/Berlin")
+	if nil != err {
+		panic(err)
+	}
+	modifiedPat := regexp.MustCompile(`^Stand (\d+)\.(\d+)\.(\d{4})`)
+
+	var modified time.Time
 	var ret []denkmal
 	var d denkmal
 	var gemeindeschlüssel string
@@ -122,8 +139,10 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, error) {
 					d.beschreibung = text.Value
 				}
 			case 4:
+				m := modifiedPat.FindStringSubmatch(text.Value)
 				switch {
-				case strings.HasPrefix(text.Value, "Stand "): // TODO
+				case nil != m:
+					modified = time.Date(mustAtoi(m[3]), time.Month(mustAtoi(m[2])), mustAtoi(m[1]), 0, 0, 0, 0, tz)
 				case strings.HasPrefix(text.Value, "Seite "): // NOOP
 				case strings.HasPrefix(text.Value, "© Bayerisches Landesamt für Denkmalpflege"): // NOOP
 				default:
@@ -138,7 +157,7 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, error) {
 		}
 	}
 	d.finish(&ret)
-	return ret, nil
+	return ret, modified, nil
 }
 
 func rawFromXmlReader(xmlFile io.Reader) (pdf2xml, error) {

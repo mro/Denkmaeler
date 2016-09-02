@@ -32,7 +32,7 @@ func main() {
 	if nil != err {
 		log.Fatal("aua")
 	}
-	ds, err := fineFromRaw(raw)
+	ds, _, err := fineFromRaw(raw)
 	if nil != err {
 		log.Fatal("aua")
 	}
