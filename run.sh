@@ -12,8 +12,9 @@ deploy_base_url="http://linkeddata.mro.name/open/country/DE/AGS/"
 ## Prepare build dir
 ######################################################################
 
-# for gemeinde in 09/4/77/148 09/1/62/000 09/1/89/159 ; do mkdir -p "${dst}/${gemeinde}" ; done
+# for gemeinde in 09/1/61/000 09/1/62/000 09/1/63/000 09/1/71/111 09/1/71/112 09/1/71/113 09/1/71/114 09/1/71/115 09/1/71/116 09/1/71/117 09/1/71/118 09/1/71/119 ; do mkdir -p "${dst}/${gemeinde}" ; done
 for gemeinde in `cut -d / -f 2-5 bayern-ags.csv` ; do mkdir -p "${dst}/${gemeinde}" ; done
+
 bash geonames.sh
 
 cat > "${dst}/README.txt" <<FOO
@@ -23,7 +24,6 @@ https://de.wikipedia.org/wiki/Amtlicher_Gemeindeschl%C3%BCssel
 Derzeit Daten ausschließlich für Bayern.
 FOO
 echo "Bundesland Bayern" > "${dst}/09/README.txt"
-echo "Regierungsbezirk Oberbayern" > "${dst}/09/1/README.txt"
 
 write_about() {
   ags_dir="${1}"
@@ -45,6 +45,8 @@ FOO
     rm "${dst}/${ags_dir}/about.rdf~"
   } &
 }
+
+rsync -aP static/assets "${dst}/"
 
 wait
 
@@ -104,7 +106,8 @@ do
   cc:attributionURL <${deploy_url}about.rdf> ;
   cc:license <http://creativecommons.org/licenses/by/3.0/> ;
   dct:spatial <${geonames_url}> ;
-  gn:admin4Code "${bayern_prefix}${nummer}" ;
+  gn:admin4Code "$(echo "${gemeinde}" | tr / ' ')" ;
+  dct:title "todo: Name der Gemeinde" ;
   dct:created "2016-08-31"^^<http://www.w3.org/2001/XMLSchema#date> ;
   dct:source <https://web.archive.org/web/20090411151155/http://www.destatis.de/jetspeed/portal/cms/Sites/destatis/Internet/DE/Content/Statistiken/Regionales/Gemeindeverzeichnis/Administrativ/AdministrativeUebersicht,templateId=renderPrint.psml> ;
   a foaf:Document ;
@@ -127,6 +130,7 @@ FOO
       && ${xml2ttl} < "${xml}" >> "${ttl}" \
       && touch -r "${pdf}" "${ttl}" \
       && rapper --quiet -i turtle -o rdfxml-abbrev "${ttl}" > "${rdf}" \
+      && sed -i '' '1s:<\?xml version=.*:<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="../../../../assets/denkmal-liste2html.xslt"?>:' "${rdf}" \
       && touch -r "${pdf}" "${rdf}"
     } &
   else
