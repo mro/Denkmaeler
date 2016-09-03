@@ -2,7 +2,7 @@
 cd "$(dirname "${0}")"
 
 curl --silent --location --remote-time --time-cond DE.zip --output DE.zip --url "http://download.geonames.org/export/dump/DE.zip"
-unzip -ud DE DE.zip
+unzip -u -d DE DE.zip
 
 fgrep ADM4 DE/DE.txt | cut -f 1,14,8 | while read geoname level gemeinde name
 do

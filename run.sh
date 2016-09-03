@@ -41,9 +41,9 @@ FOO
   echo "." >> "${dst}/${ags_dir}/about.ttl"
   {
     rapper --quiet --input turtle --output rdfxml-abbrev "${dst}/${ags_dir}/about.ttl" > "${dst}/${ags_dir}/about.rdf~"
-    diff -q "${dst}/${ags_dir}/about.rdf~" "${dst}/${ags_dir}/about.rdf" && cp "${dst}/${ags_dir}/about.rdf~" "${dst}/${ags_dir}/about.rdf"
+    diff -q "${dst}/${ags_dir}/about.rdf" "${dst}/${ags_dir}/about.rdf~" 2>/dev/null || cp "${dst}/${ags_dir}/about.rdf~" "${dst}/${ags_dir}/about.rdf"
     rm "${dst}/${ags_dir}/about.rdf~"
-  } &
+  }
 }
 
 rsync -aP static/assets "${dst}/"
@@ -59,10 +59,10 @@ do
     if [ "" = "${gemeinde}" ] ; then
       rme="${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/README.txt"
       [ -r "${rme}" ] || echo "Landkreis ${name}" > "${rme}"
-      # write_about "${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}" "${name}" &
     else
       rme="${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}/README.txt"
       [ -r "${rme}" ] || echo "Gemeinde ${name}" > "${rme}"
+      write_about "${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}" "${name}" &
     fi
   fi
 done < bayern-ags.csv
