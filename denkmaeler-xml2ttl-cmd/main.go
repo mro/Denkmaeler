@@ -24,6 +24,7 @@ import (
 	"log" // log.Fatal
 	"os"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -32,7 +33,7 @@ func main() {
 	if nil != err {
 		log.Fatal("aua")
 	}
-	ds, _, err := fineFromRaw(raw)
+	ds, date, err := fineFromRaw(raw)
 	if nil != err {
 		log.Fatal("aua")
 	}
@@ -43,17 +44,38 @@ func main() {
 	fmt.Printf("@prefix c: <http://nwalsh.com/rdf/contacts#> .\n")
 	fmt.Printf("\n")
 
-	for _, d := range ds {
-		fmt.Printf("<http://linkeddata.mro.name/open/country/DE/AGS/%s/denkmal.rdf#%s>\n", strings.Replace(d.gemeindeschlüssel, " ", "/", -1), d.aktennummer)
+	url := ""
+	// data per entry
+	for idx, d := range ds {
+		if "" == url {
+			url = "http://linkeddata.mro.name/open/country/DE/AGS/" + strings.Replace(d.gemeindeschlüssel, " ", "/", -1) + "/denkmal.rdf"
+		}
+		fmt.Printf("<%s#%s>\n", url, d.aktennummer)
+		fmt.Printf("  # %d\n", idx)
 		fmt.Printf("  dct:identifier \"%s\" ;\n", d.aktennummer)
 		fmt.Printf("  gn:admin4Code \"%s\" ;\n", d.gemeindeschlüssel) // http://gis.stackexchange.com/q/7688
 		fmt.Printf("  dct:subject <http://www.geodaten.bayern.de/denkmaltyp#%s> ;\n", d.typ)
 		for _, a := range d.adresse {
 			fmt.Printf("  c:street \"\"\"%s\"\"\" ;\n", a)
 		}
-		fmt.Printf("  dct:description \"\"\"%s\"\"\" ;\n", strings.Replace(d.beschreibung, "\"", "\\\"", -1))
-		fmt.Printf(".\n")
+		fmt.Printf("  dct:description \"\"\"%s\"\"\" .\n", strings.Replace(d.beschreibung, "\"", "\\\"", -1))
 	}
+	// Lists, Order
+	for _, typ := range []string{"Baudenkmäler", "Bodendenkmäler"} {
+		fmt.Printf("<%s#%s>\n", url, typ)
+		fmt.Printf("  dct:title \"\"\"%s\"\"\" ; \n", typ)
+		fmt.Printf("  dct:hasPart [ \n")
+		for idx, d := range ds {
+			if typ != d.typ {
+				continue
+			}
+			fmt.Printf("    rdf:_%04d <%s#%s> ; \n", 1+idx, url, d.aktennummer)
+		}
+		fmt.Printf("  a rdf:Seq ] . \n")
+	}
+	// Modified date
+	fmt.Printf("<%s>\n", url)
+	fmt.Printf("  dct:modified \"%s\" .\n", date.Format(time.RFC3339))
 }
 
 func commandHelp() {
