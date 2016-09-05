@@ -118,9 +118,10 @@ func TestDataFromXmlFileName(t *testing.T) {
 
 func TestFineFromRawSmall(t *testing.T) {
 	pdf, err := rawFromXmlFileName("testdata/189159-liste.xml")
-	ds, mod, err := fineFromRaw(pdf)
+	ds, mod, name, err := fineFromRaw(pdf)
 	assert.Nil(t, err, "soso")
 	assert.Equal(t, "2016-08-13T00:00:00+02:00", mod.Format(time.RFC3339), "huhu")
+	assert.Equal(t, "Übersee", name, "huhu")
 	// assert.Equal(t, "Regierungsbezirk Oberbayern", l.gemeinde.regierungsbezirk, "soso")
 	// assert.Equal(t, "Traunstein", l.gemeinde.landkreis, "soso")
 	// assert.Equal(t, "Übersee", l.gemeinde.gemeinde, "soso")
@@ -149,9 +150,10 @@ func TestFineFromRawSmall(t *testing.T) {
 
 func TestFineFromRawLarge(t *testing.T) {
 	pdf, err := rawFromXmlFileName("testdata/162000-liste.xml")
-	ds, mod, err := fineFromRaw(pdf)
+	ds, mod, name, err := fineFromRaw(pdf)
 	assert.Nil(t, err, "soso")
 	assert.Equal(t, "2016-08-23T00:00:00+02:00", mod.Format(time.RFC3339), "huhu")
+	assert.Equal(t, "München", name, "huhu")
 	// assert.Equal(t, "Regierungsbezirk Oberbayern", l.gemeinde.regierungsbezirk, "soso")
 	// assert.Equal(t, "Traunstein", l.gemeinde.landkreis, "soso")
 	// assert.Equal(t, "Übersee", l.gemeinde.gemeinde, "soso")

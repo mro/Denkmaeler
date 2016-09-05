@@ -1,5 +1,6 @@
 #!/bin/sh
 cd "$(dirname "$0")"
+#  Copyright (c) 2016-2016 Marcus Rohrmoser, http://mro.name/~me
 
 pdftohtml 2>/dev/null
 [ 1 -eq $? ] || { echo "Please install pdftohtml." 1>&2 && exit 1 ; }
@@ -12,8 +13,10 @@ deploy_base_url="http://linkeddata.mro.name/open/country/DE/AGS/"
 ## Prepare build dir
 ######################################################################
 
-# for gemeinde in 09/1/61/000 09/1/62/000 09/1/63/000 09/1/71/111 09/1/71/112 09/1/71/113 09/1/71/114 09/1/71/115 09/1/71/116 09/1/71/117 09/1/71/118 09/1/71/119 ; do mkdir -p "${dst}/${gemeinde}" ; done
-for gemeinde in `cut -d / -f 2-5 bayern-ags.csv` ; do mkdir -p "${dst}/${gemeinde}" ; done
+# for gemeinde in 09/1/61/000 09/1/62/000 09/1/63/000 09/1/71/111 09/1/71/112 09/1/71/113 09/1/71/114 09/1/71/115 09/1/71/116 09/1/71/117 09/1/71/118 09/1/71/119
+# for gemeinde in 09/1/62/000 09/1/89/114
+for gemeinde in `cut -d / -f 2-5 bayern-ags.csv`
+do mkdir -p "${dst}/${gemeinde}" ; done
 
 bash geonames.sh
 
@@ -29,15 +32,23 @@ write_about() {
   ags_dir="${1}"
   title="${2}"
   geonames_url="$(cat "${dst}/${ags_dir}/geonames.url")"
+  dbpedia_url="http://dbpedia.org/page/${title}"
 
   cat > "${dst}/${ags_dir}/about.ttl" <<FOO
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dct: <http://purl.org/dc/terms/> .
-@prefix gn: <http://www.geonames.org/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dbp: <http://dbpedia.org/property/> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
 <${deploy_base_url}${ags_dir}/>
-  dct:title """${title}""" ;
-  gn:admin4Code "$(echo "${ags_dir}" | tr / ' ')" ;
+	a geo:SpatialThing ;
+  rdfs:label """${title}"""@de ;
+  dct:identifier "$(echo "${ags_dir}" | tr / ' ')" ;
+  dbp:gemeindeschlüssel "$(echo "${ags_dir}" | tr -d /)" ;
 FOO
-  [ "" != "${geonames_url}" ] && echo "  dct:spatial <${geonames_url}> ;" >> "${dst}/${ags_dir}/about.ttl"
+  [ "" != "${geonames_url}" ] && echo "  owl:sameAs <${geonames_url}> ;" >> "${dst}/${ags_dir}/about.ttl"
+  [ "" != "${dbpedia_url}" ] && echo "  owl:sameAs <${dbpedia_url}> ;" >> "${dst}/${ags_dir}/about.ttl"
+
   echo "." >> "${dst}/${ags_dir}/about.ttl"
   {
     rapper --quiet --input turtle --output rdfxml-abbrev "${dst}/${ags_dir}/about.ttl" > "${dst}/${ags_dir}/about.rdf~"
@@ -50,18 +61,19 @@ rsync -aP static/assets "${dst}/"
 
 wait
 
+foot="\n\nSiehe http://purl.mro.name/denkmaeler"
 while IFS='/' read ignore bundesland regierungsbezirk landkreis gemeinde name
 do
   if [ "" = "${landkreis}" ] ; then
     rme="${dst}/${bundesland}/${regierungsbezirk}/README.txt"
-    [ -r "${rme}" ] || echo "${name}" > "${rme}"
+    [ -r "${rme}" ] || echo "${name}${foot}" > "${rme}"
   else
     if [ "" = "${gemeinde}" ] ; then
       rme="${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/README.txt"
-      [ -r "${rme}" ] || echo "Landkreis ${name}" > "${rme}"
+      [ -r "${rme}" ] || echo "Landkreis ${name}${foot}" > "${rme}"
     else
       rme="${dst}/${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}/README.txt"
-      [ -r "${rme}" ] || echo "Gemeinde ${name}" > "${rme}"
+      [ -r "${rme}" ] || echo "Gemeinde ${name}${foot}" > "${rme}"
       write_about "${bundesland}/${regierungsbezirk}/${landkreis}/${gemeinde}" "${name}" &
     fi
   fi
@@ -86,28 +98,31 @@ do
   url="http://geodaten.bayern.de/denkmal_static_data/externe_denkmalliste/pdf/denkmalliste_merge_${nummer}.pdf"
   deploy_url="${deploy_base_url}${gemeinde}/"
   base_url="http://geodaten.bayern.de/"
+  geonames_url="$(cat "${dst}/${gemeinde}/geonames.url")"
   pdf="${file}.pdf"
   http_code="$(curl --user-agent http://github.com/mro/Denkmaeler --silent --write-out "%{http_code}" --location --remote-time --create-dirs --output "${pdf}" --time-cond "${pdf}" --url "${url}")"
   if [ "200" = "${http_code}" ] ; then
     {
       ttl="${file}.ttl"
       cat > "${ttl}" <<FOO
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix cc: <http://creativecommons.org/ns#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
 @prefix dct: <http://purl.org/dc/terms/> .
-@prefix gn: <http://www.geonames.org/ontology#> .
-
-# <${deploy_url}denkmal.rdf>
-#    dct:modified "$(date +%F)"^^<http://www.w3.org/2001/XMLSchema#date> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dbp: <http://dbpedia.org/property/> .
 
 <${deploy_url}about.rdf>
   cc:attributionName "🏰"^^<http://www.w3.org/2001/XMLSchema#string> ;
   cc:attributionURL <${deploy_url}about.rdf> ;
-  cc:license <http://creativecommons.org/licenses/by/3.0/> ;
-  dct:spatial <${geonames_url}> ;
-  gn:admin4Code "$(echo "${gemeinde}" | tr / ' ')" ;
-  dct:title "todo: Name der Gemeinde" ;
+  cc:license <http://creativecommons.org/licenses/by-sa/3.0/> ;
+  dct:format <http://purl.org/NET/mediatypes/application/rdf+xml> ;
+  dct:identifier "$(echo "${gemeinde}" | tr / ' ')" ;
+FOO
+
+      cat >> "${ttl}" <<FOO
   dct:created "2016-08-31"^^<http://www.w3.org/2001/XMLSchema#date> ;
   dct:source <https://web.archive.org/web/20090411151155/http://www.destatis.de/jetspeed/portal/cms/Sites/destatis/Internet/DE/Content/Statistiken/Regionales/Gemeindeverzeichnis/Administrativ/AdministrativeUebersicht,templateId=renderPrint.psml> ;
   a foaf:Document ;
@@ -116,9 +131,15 @@ do
 <${deploy_url}denkmal.rdf>
   cc:attributionName "🏰"^^<http://www.w3.org/2001/XMLSchema#string> ;
   cc:attributionURL <${deploy_url}denkmal.rdf> ;
-  cc:license <http://creativecommons.org/licenses/by/3.0/> ;
+  cc:license <http://creativecommons.org/licenses/by-sa/3.0/> ;
+  dct:format <http://purl.org/NET/mediatypes/application/rdf+xml> ;
+  dct:hasFormat <${url}> ;
   dct:source <${url}> ;
-  dct:relation <http://github.com/mro/Denkmaeler> ;
+FOO
+  [ "" != "${geonames_url}" ] && echo "  dct:spatial <${geonames_url}> ;" >> "${ttl}"
+
+      cat >> "${ttl}" <<FOO
+  dct:relation <http://purl.mro.name/denkmaeler> ;
   dct:created "2016-08-31"^^<http://www.w3.org/2001/XMLSchema#date> ;
   a foaf:Document ;
   foaf:primaryTopic <${deploy_url}> .

@@ -74,13 +74,14 @@ func mustAtoi(s string) int {
 	return r
 }
 
-func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, error) {
+func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 	tz, err := time.LoadLocation("Europe/Berlin")
 	if nil != err {
 		panic(err)
 	}
 	modifiedPat := regexp.MustCompile(`^Stand (\d+)\.(\d+)\.(\d{4})`)
 
+	var name string
 	var modified time.Time
 	var ret []denkmal
 	var d denkmal
@@ -111,6 +112,7 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, error) {
 				case "Baudenkmäler", "Bodendenkmäler":
 					typ = text.Bold
 				case g.gemeinde:
+					name = g.gemeinde
 				default:
 					panic("87: " + text.Bold)
 				}
@@ -157,7 +159,7 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, error) {
 		}
 	}
 	d.finish(&ret)
-	return ret, modified, nil
+	return ret, modified, name, nil
 }
 
 func rawFromXmlReader(xmlFile io.Reader) (pdf2xml, error) {

@@ -2,15 +2,17 @@
 <!--
   …
 
- Copyright (c) 2016-2016 Marcus Rohrmoser, http://github.name/mro
+ Copyright (c) 2016-2016 Marcus Rohrmoser, http://mro.name/~me
 
  http://www.w3.org/TR/xslt/
 -->
 <xsl:stylesheet
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
   xmlns:dct="http://purl.org/dc/terms/"
   xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
   xmlns:c="http://nwalsh.com/rdf/contacts#"
   xmlns:gn="http://www.geonames.org/ontology#"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -61,34 +63,37 @@
   font-size: 9pt;
 }
         </style>
-        <title>Denkmalliste <xsl:value-of select="foaf:Document/dct:title"/></title>
+        <title>🏰 Denkmalliste <xsl:value-of select="foaf:Document/rdfs:label"/></title>
       </head>
       <body>
         <div class="container">
-          <h1>Denkmalliste <xsl:value-of select="foaf:Document/dct:title"/></h1>
+          <h1>🏰 Denkmalliste <xsl:value-of select="foaf:Document/rdfs:label"/></h1>
           <p>
-          	<a href="{foaf:Document/dct:source[starts-with(@rdf:resource, 'http://geodaten.bayern.de/denkmal_static_data/externe_denkmalliste/')]/@rdf:resource}">Quelle</a>
+            <a href="{foaf:Document/dct:source[starts-with(@rdf:resource, 'http://geodaten.bayern.de/denkmal_static_data/externe_denkmalliste/')]/@rdf:resource}">Quelle</a>,
+            Stand: <xsl:value-of select="substring(foaf:Document/dct:date,1,10)"/>,
+            <a href="{foaf:Document/dct:spatial[starts-with(@rdf:resource, 'http://sws.geonames.org/')]/@rdf:resource}">🌐</a>,
+            <a href="http://dbpedia.org/page/{foaf:Document/rdfs:label}">DBPedia</a>,
           </p>
 
-          <h2 id="bau">Baudenkmäler</h2>
+          <h2 id="Baudenkmäler">Baudenkmäler</h2>
           <dl>
-            <xsl:for-each select="rdf:Description[  'http://www.geodaten.bayern.de/denkmaltyp#Baudenkmäler' = dct:subject/@rdf:resource]">
-              <xsl:apply-templates select="."/>
-            </xsl:for-each>
+            <xsl:apply-templates select="geo:SpatialThing[dct:type/@rdf:resource='http://www.geodaten.bayern.de/denkmaltyp#Baudenkmäler']">
+              <xsl:sort select="rdfs:label"/>
+            </xsl:apply-templates>
           </dl>
 
-          <h2 id="boden">Bodendenkmäler</h2>
+          <h2 id="Bodendenkmäler">Bodendenkmäler</h2>
           <dl>
-            <xsl:for-each select="rdf:Description[  'http://www.geodaten.bayern.de/denkmaltyp#Bodendenkmäler' = dct:subject/@rdf:resource]">
-              <xsl:apply-templates select="."/>
-            </xsl:for-each>
+            <xsl:apply-templates select="geo:SpatialThing[dct:type/@rdf:resource='http://www.geodaten.bayern.de/denkmaltyp#Bodendenkmäler']">
+              <xsl:sort select="rdfs:label"/>
+            </xsl:apply-templates>
           </dl>
         </div>
       </body>
     </html>
   </xsl:template>
 
-  <xsl:template match="rdf:Description[contains(@rdf:about, '/denkmal.rdf#')]">
+  <xsl:template match="geo:SpatialThing[contains(@rdf:about, '/denkmal.rdf#')]">
     <xsl:variable name="ident" select="substring-after(@rdf:about, '#')"/>
     <dt id="{$ident}"><a href="#{$ident}"><xsl:value-of select="$ident"/></a></dt>
     <dd>

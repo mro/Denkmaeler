@@ -33,13 +33,15 @@ func main() {
 	if nil != err {
 		log.Fatal("aua")
 	}
-	ds, date, err := fineFromRaw(raw)
+	ds, date, name, err := fineFromRaw(raw)
 	if nil != err {
 		log.Fatal("aua")
 	}
 
 	fmt.Printf("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n")
+	fmt.Printf("@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n")
 	fmt.Printf("@prefix dct: <http://purl.org/dc/terms/> .\n")
+	fmt.Printf("@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .\n")
 	fmt.Printf("@prefix gn: <http://www.geonames.org/ontology#> .\n")
 	fmt.Printf("@prefix c: <http://nwalsh.com/rdf/contacts#> .\n")
 	fmt.Printf("\n")
@@ -51,19 +53,21 @@ func main() {
 			url = "http://linkeddata.mro.name/open/country/DE/AGS/" + strings.Replace(d.gemeindeschlüssel, " ", "/", -1) + "/denkmal.rdf"
 		}
 		fmt.Printf("<%s#%s>\n", url, d.aktennummer)
-		fmt.Printf("  # %d\n", idx)
+		fmt.Printf("  a geo:SpatialThing ;\n")
+		fmt.Printf("  rdfs:label %d ;\n", 1+idx)
 		fmt.Printf("  dct:identifier \"%s\" ;\n", d.aktennummer)
-		fmt.Printf("  gn:admin4Code \"%s\" ;\n", d.gemeindeschlüssel) // http://gis.stackexchange.com/q/7688
-		fmt.Printf("  dct:subject <http://www.geodaten.bayern.de/denkmaltyp#%s> ;\n", d.typ)
+		fmt.Printf("  dct:isPartOf <%s#%s> ;\n", url, d.typ)
+		fmt.Printf("  dct:type <http://www.geodaten.bayern.de/denkmaltyp#%s> ;\n", d.typ)
 		for _, a := range d.adresse {
 			fmt.Printf("  c:street \"\"\"%s\"\"\" ;\n", a)
 		}
-		fmt.Printf("  dct:description \"\"\"%s\"\"\" .\n", strings.Replace(d.beschreibung, "\"", "\\\"", -1))
+		fmt.Printf("  dct:description \"\"\"%s\"\"\"@de .\n", strings.Replace(d.beschreibung, "\"", "\\\"", -1))
 	}
 	// Lists, Order
 	for _, typ := range []string{"Baudenkmäler", "Bodendenkmäler"} {
 		fmt.Printf("<%s#%s>\n", url, typ)
-		fmt.Printf("  dct:title \"\"\"%s\"\"\" ; \n", typ)
+		fmt.Printf("  rdfs:label \"\"\"%s\"\"\"@de ; \n", typ)
+		// fmt.Printf("  dct:isPartOf \"%s\" ;\n", d.gemeindeschlüssel) // http://gis.stackexchange.com/q/7688
 		fmt.Printf("  dct:hasPart [ \n")
 		for idx, d := range ds {
 			if typ != d.typ {
@@ -73,9 +77,12 @@ func main() {
 		}
 		fmt.Printf("  a rdf:Seq ] . \n")
 	}
-	// Modified date
+	// Name
 	fmt.Printf("<%s>\n", url)
-	fmt.Printf("  dct:modified \"%s\" .\n", date.Format(time.RFC3339))
+	fmt.Printf("  rdfs:label \"\"\"%s\"\"\"@de .\n", strings.Replace(name, "\"", "\\\"", -1))
+	// Date
+	fmt.Printf("<%s>\n", url)
+	fmt.Printf("  dct:date \"%s\" .\n", date.Format(time.RFC3339))
 }
 
 func commandHelp() {
