@@ -40,14 +40,28 @@ write_about() {
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix dbp: <http://dbpedia.org/property/> .
 @prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix cc: <http://creativecommons.org/ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+<${deploy_base_url}${ags_dir}/about.rdf>
+  cc:attributionName "🏰"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  cc:attributionURL <${deploy_base_url}${ags_dir}/about.rdf> ;
+  cc:license <http://creativecommons.org/licenses/by-sa/3.0/> ;
+  dct:relation <http://purl.mro.name/denkmaeler> ;
+  dct:format <http://purl.org/NET/mediatypes/application/rdf+xml> ;
+  dct:source <https://web.archive.org/web/20090411151155/http://www.destatis.de/jetspeed/portal/cms/Sites/destatis/Internet/DE/Content/Statistiken/Regionales/Gemeindeverzeichnis/Administrativ/AdministrativeUebersicht,templateId=renderPrint.psml> ;
+  a foaf:Document ;
+  foaf:primaryTopic <${deploy_base_url}${ags_dir}/> .
+
 <${deploy_base_url}${ags_dir}/>
-	a geo:SpatialThing ;
+  a geo:SpatialThing ;
   rdfs:label """${title}"""@de ;
   dct:identifier "$(echo "${ags_dir}" | tr / ' ')" ;
   dbp:gemeindeschlüssel "$(echo "${ags_dir}" | tr -d /)" ;
+  dct:relation <${deploy_base_url}${ags_dir}/denkmal.rdf> ;
 FOO
   [ "" != "${geonames_url}" ] && echo "  owl:sameAs <${geonames_url}> ;" >> "${dst}/${ags_dir}/about.ttl"
-  [ "" != "${dbpedia_url}" ] && echo "  owl:sameAs <${dbpedia_url}> ;" >> "${dst}/${ags_dir}/about.ttl"
+  [ "" != "${dbpedia_url}" ] && echo "#  owl:sameAs <${dbpedia_url}> ;" >> "${dst}/${ags_dir}/about.ttl"
 
   echo "." >> "${dst}/${ags_dir}/about.ttl"
   {
@@ -107,26 +121,12 @@ do
       cat > "${ttl}" <<FOO
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix cc: <http://creativecommons.org/ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix dbp: <http://dbpedia.org/property/> .
-
-<${deploy_url}about.rdf>
-  cc:attributionName "🏰"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  cc:attributionURL <${deploy_url}about.rdf> ;
-  cc:license <http://creativecommons.org/licenses/by-sa/3.0/> ;
-  dct:format <http://purl.org/NET/mediatypes/application/rdf+xml> ;
-  dct:identifier "$(echo "${gemeinde}" | tr / ' ')" ;
-FOO
-
-      cat >> "${ttl}" <<FOO
-  dct:created "2016-08-31"^^<http://www.w3.org/2001/XMLSchema#date> ;
-  dct:source <https://web.archive.org/web/20090411151155/http://www.destatis.de/jetspeed/portal/cms/Sites/destatis/Internet/DE/Content/Statistiken/Regionales/Gemeindeverzeichnis/Administrativ/AdministrativeUebersicht,templateId=renderPrint.psml> ;
-  a foaf:Document ;
-  foaf:primaryTopic <${deploy_url}> .
+@prefix cc: <http://creativecommons.org/ns#> .
 
 <${deploy_url}denkmal.rdf>
   cc:attributionName "🏰"^^<http://www.w3.org/2001/XMLSchema#string> ;

@@ -78,14 +78,14 @@
           <h2 id="Baudenkmäler">Baudenkmäler</h2>
           <dl>
             <xsl:apply-templates select="geo:SpatialThing[dct:type/@rdf:resource='http://www.geodaten.bayern.de/denkmaltyp#Baudenkmäler']">
-              <xsl:sort select="rdfs:label"/>
+              <xsl:sort select="rdfs:label" data-type="number"/>
             </xsl:apply-templates>
           </dl>
 
           <h2 id="Bodendenkmäler">Bodendenkmäler</h2>
           <dl>
             <xsl:apply-templates select="geo:SpatialThing[dct:type/@rdf:resource='http://www.geodaten.bayern.de/denkmaltyp#Bodendenkmäler']">
-              <xsl:sort select="rdfs:label"/>
+              <xsl:sort select="rdfs:label" data-type="number"/>
             </xsl:apply-templates>
           </dl>
         </div>
