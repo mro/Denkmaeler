@@ -28,6 +28,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 )
 
 const bayern = "09" // https://de.wikipedia.org/wiki/Amtlicher_Gemeindeschl%C3%BCssel
@@ -87,7 +89,7 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 	var d denkmal
 	var gemeindeschlüssel string
 	var typ string
-	var oldTop int32
+	var oldText text
 	var g gemeinde
 	aktenPat := regexp.MustCompile(`([DE]-(\d)-(\d{2})-(\d{3})-\d+)|([D]-\d-\d{4}-\d{4})`)
 
@@ -149,13 +151,21 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 				case strings.HasPrefix(text.Value, "© Bayerisches Landesamt für Denkmalpflege"): // NOOP
 				default:
 					sep := " "
-					if text.Top-oldTop > 30 {
+					first, _ := utf8.DecodeRuneInString(text.Value[0:])
+					switch {
+					case text.Top-oldText.Top > 30:
 						sep = "\n\n"
+					case strings.HasSuffix(oldText.Value, ".") && !unicode.IsLower(first) && oldText.Width < 550:
+						// when is it a forced linefeed?
+						// - previous line ends with "."
+						// - current line does not start with lowercase
+						// - previous width < 550
+						sep = "\n"
 					}
 					d.beschreibung += sep + text.Value
 				}
 			}
-			oldTop = text.Top
+			oldText = text
 		}
 	}
 	d.finish(&ret)
@@ -191,6 +201,7 @@ type text struct {
 	XMLName xml.Name `xml:"text"`
 	Top     int32    `xml:"top,attr"`
 	Left    int32    `xml:"left,attr"`
+	Width   int32    `xml:"width,attr"`
 	Font    int8     `xml:"font,attr"`
 	Bold    string   `xml:"b"`
 	Value   string   `xml:",chardata"` // http://stackoverflow.com/a/20600762
