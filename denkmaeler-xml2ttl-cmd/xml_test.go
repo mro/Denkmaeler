@@ -190,3 +190,20 @@ func TestFineFromRawLarge(t *testing.T) {
 		assert.Equal(t, "nachqualifiziert", d.verfahrensstand, "soso")
 	}
 }
+
+func TestFineFromRawNichtNachqualifiziertIssue1(t *testing.T) {
+	pdf, err := rawFromXmlFileName("testdata/572115-liste.xml")
+	ds, _, _, err := fineFromRaw(pdf)
+	assert.Nil(t, err, "soso")
+
+	{
+		d := ds[13]
+		assert.Equal(t, "D-5-72-115-51", d.aktennummer, "soso")
+		assert.Equal(t, "09 5 72 115", d.gemeindeschlüssel, "soso")
+		assert.Equal(t, "Baudenkmäler", d.typ, "soso")
+		assert.Equal(t, 1, len(d.adresse), "soso")
+		assert.Equal(t, "Grenzstein", d.adresse[0], "soso")
+		assert.Equal(t, "Jagdgrenzstein, bez. 1565 und 1781; an der Straße nach Bubenreuth.", d.beschreibung, "soso")
+		assert.Equal(t, "nicht nachqualifiziert, im Bayerischen Denkmal-Atlas nicht kartiert", d.verfahrensstand, "soso")
+	}
+}

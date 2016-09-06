@@ -134,7 +134,7 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 						gemeindeschlüssel: gemeindeschlüssel,
 						typ:               typ,
 					}
-				case "nicht nachqualifiziert" == text.Bold, "nachqualifiziert" == text.Bold:
+				case strings.HasPrefix(text.Bold, "nicht nachqualifiziert"), "nachqualifiziert" == text.Bold:
 					d.verfahrensstand = text.Bold
 				case strings.HasPrefix(text.Bold, "Anzahl "): // NOOP
 					// log.Printf("%s\n", text.Bold)
