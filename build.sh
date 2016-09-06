@@ -2,6 +2,8 @@
 # https://golang.org/doc/install/source#environment
 #
 
+go version > /dev/null || { echo "Please install the Go toolchain, e.g. $ apt-get install golang-go" 1>&2 && exit 1; }
+
 cd "$(dirname "${0}")"
 # $ uname -s -m
 # Darwin x86_64

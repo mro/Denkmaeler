@@ -1,0 +1,15 @@
+---
+# http://docs.travis-ci.com/user/languages/go/#Default-Test-Script
+language: go
+go: # https://github.com/atotto/travisci-golang-example
+- 1.1
+- 1.7
+- tip
+branches:
+  only:
+  - master
+  - develop
+install:
+- go get github.com/stretchr/testify
+script:
+- cd denkmaeler-xml2ttl-cmd && go test -v ./...
