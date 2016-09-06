@@ -37,6 +37,7 @@ for bundesland in `find . -mindepth 1 -maxdepth 1 -type d -name '??' | cut -c3- 
       echo "        <outline id='AGS-${bundesland}-${regbez}-${landkreis}' text='$(head -n 1 README.txt)'>" >> "${opml}"
       for gemeinde in `find . -mindepth 1 -maxdepth 1 -type d -name '???' | cut -c3- | sort` ; do
         cd "${cwd}/${bundesland}/${regbez}/${landkreis}/${gemeinde}"
+        [ -r denkmal.rdf ] || continue
         xmlUrl="${bundesland}/${regbez}/${landkreis}/${gemeinde}/denkmal.rdf"
         htmlUrl="${xmlUrl}"
         echo "          <outline id='AGS-${bundesland}-${regbez}-${landkreis}-${gemeinde}' text='$(head -n 1 README.txt)' language='de' type='rdf' version='rdf' xmlUrl='${xmlUrl}' htmlUrl='${htmlUrl}'/>" >> "${opml}"

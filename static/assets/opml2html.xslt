@@ -50,7 +50,7 @@
       <!-- http://www.quirksmode.org/blog/archives/2013/10/initialscale1_m.html -->
       <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
       <!-- meta name="viewport" content="width=400"/ -->
-      <link href="../assets/style.css" rel="stylesheet" type="text/css"/>
+      <link href="assets/style.css" rel="stylesheet" type="text/css"/>
 
       <link rel='license'>http://creativecommons.org/licenses/by-sa/3.0/de/</link>
       <link rel='via' href='index.opml'/>
@@ -60,9 +60,6 @@
 /*&lt;![CDATA[<![CDATA[*/
 body {
   background-color: #EAEAEC;
-}
-li.ghost {
-  color: #AAA;
 }
 /*]]>]]&gt;*/
         </style>
@@ -97,6 +94,5 @@ li.ghost {
       </xsl:choose>
     </li>
   </xsl:template>
-
 
 </xsl:stylesheet>
