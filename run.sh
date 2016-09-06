@@ -162,11 +162,19 @@ done
 
 wait
 
+cd "${dst}/.git/.." && {
+  git add --all . \
+  && git commit -m "update" \
+  && git update-server-info
+  cd -
+}
+
 ls -Altr "${dst}"/??/?/??/*/*.rdf
 ls "${dst}"/??/?/??/*/*.rdf 1>&2
 
 ######################################################################
-## deploy txt and RDF.
+## deploy txt, RDF and denkmal.git
 ######################################################################
 
-rsync -avPz --delete --delete-excluded --exclude .??* --exclude *.pdf --exclude *.url --exclude *.xml --exclude *.ttl "build/" vario:~/"mro.name/linkeddata/open/country/DE/AGS/"
+rsync -avPz --delete --delete-excluded --exclude .??* --exclude *.pdf --exclude *.url --exclude *.xml --exclude *.ttl "${dst}/" vario:~/"mro.name/linkeddata/open/country/DE/AGS/"
+rsync -avPz --delete "${dst}/.git/" vario:~/"mro.name/linkeddata/open/country/DE/AGS/denkmal.git"
