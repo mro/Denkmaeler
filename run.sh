@@ -162,6 +162,8 @@ done
 
 wait
 
+sh makeopml.sh
+
 cd "${dst}/.git/.." && {
   git add --all . \
   && git commit -m "update" \
