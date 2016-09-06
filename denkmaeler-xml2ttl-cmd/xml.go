@@ -134,13 +134,16 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 						gemeindeschlüssel: gemeindeschlüssel,
 						typ:               typ,
 					}
+					oldText = text
 				case strings.HasPrefix(text.Bold, "nicht nachqualifiziert"), "nachqualifiziert" == text.Bold:
 					d.verfahrensstand = text.Bold
+					oldText = text
 				case strings.HasPrefix(text.Bold, "Anzahl "): // NOOP
 					// log.Printf("%s\n", text.Bold)
 				default:
 					d.adresse = append(d.adresse, text.Bold)
 					d.beschreibung = text.Value
+					oldText = text
 				}
 			case 4:
 				m := modifiedPat.FindStringSubmatch(text.Value)
@@ -163,9 +166,9 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 						sep = "\n"
 					}
 					d.beschreibung += sep + text.Value
+					oldText = text
 				}
 			}
-			oldText = text
 		}
 	}
 	d.finish(&ret)
