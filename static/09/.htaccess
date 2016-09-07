@@ -6,5 +6,5 @@ RewriteRule ^aktennummer/(([DE])-(\d)-(\d{2})-(\d{3})-(\d+))$				http://linkedda
 # https://simonecarletti.com/blog/2009/01/apache-query-string-redirects/
 # http://linkeddata.mro.name/open/country/DE/AGS/09/search?aktennummer=D-1-72-129-3
 RewriteCond %{REQUEST_URI}  /search$
-RewriteCond %{QUERY_STRING} ^aktennummer=(([DE])-(\d)-(\d{2})-(\d{3})-(\d+))$
-RewriteRule ^(.*)$ http://linkeddata.mro.name/open/country/DE/AGS/09/%3/%4/%5/denkmal.rdf#%1  [last,redirect,noescape,qsdiscard]
+RewriteCond %{QUERY_STRING} ^aktennummer=(.*)$
+RewriteRule ^(.*)$ http://linkeddata.mro.name/open/country/DE/AGS/09/aktennummer/%1  						[last,redirect,noescape,qsdiscard]
