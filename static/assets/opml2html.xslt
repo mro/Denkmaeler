@@ -67,6 +67,10 @@ body {
     <body>
       <h1 id="top"><xsl:value-of select="head/title"/></h1>
       <p>
+        <form action="09/search" method="GET">
+          <input id="aktennummer" name="aktennummer" type="search" size="15" placeholder="Aktennummer"/>
+          <input type="submit" value="Los!"/>
+        </form>
         <a href="http://purl.mro.name/denkmaeler">GitHub</a>,<br/>
       </p>
 

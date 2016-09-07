@@ -15,3 +15,7 @@ wobei die Zahl der 'bayerische Teil' des
 [amtlichen Gemeindeschlüssels](https://de.wikipedia.org/wiki/Amtlicher_Gemeindeschl%C3%BCssel)
 zu sein scheint.
 
+<form action="http://linkeddata.mro.name/open/country/DE/AGS/09/search" method="GET">
+  <input id="aktennummer" name="aktennummer" type="search" size="15" placeholder="Aktennummer"/>
+  <input type="submit" value="Los!"/>
+</form>
