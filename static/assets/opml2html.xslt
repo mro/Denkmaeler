@@ -66,6 +66,9 @@ body {
     </head>
     <body>
       <h1 id="top"><xsl:value-of select="head/title"/></h1>
+      <p>
+        <a href="http://purl.mro.name/denkmaeler">GitHub</a>,<br/>
+      </p>
 
       <ul>
         <xsl:apply-templates select="body/outline">

@@ -72,7 +72,9 @@
             <a href="{foaf:Document/dct:source[starts-with(@rdf:resource, 'http://geodaten.bayern.de/denkmal_static_data/externe_denkmalliste/')]/@rdf:resource}">Quelle</a>,
             Stand: <xsl:value-of select="substring(foaf:Document/dct:date,1,10)"/>,
             <a href="{foaf:Document/dct:spatial[starts-with(@rdf:resource, 'http://sws.geonames.org/')]/@rdf:resource}">🌐</a>,
-            <a href="http://dbpedia.org/page/{foaf:Document/rdfs:label}">DBPedia</a>,
+            <a href="http://dbpedia.org/page/{foaf:Document/rdfs:label}">DBPedia</a>,<br/>
+            <a href="../../../denkmal.opml">Bayernweite Übersicht</a>,<br/>
+            <a href="http://purl.mro.name/denkmaeler">GitHub</a>,<br/>
           </p>
 
           <h2 id="Baudenkmäler">Baudenkmäler</h2>
