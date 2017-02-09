@@ -2,7 +2,7 @@
 <!--
   …
 
- Copyright (c) 2016-2016 Marcus Rohrmoser, http://mro.name/~me
+ Copyright (c) 2016-2017 Marcus Rohrmoser, http://mro.name/~me
 
  http://www.w3.org/TR/xslt/
 -->
@@ -45,6 +45,7 @@
     doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
 
   <xsl:template match="/rdf:RDF">
+    <xsl:variable name="AGS" select="translate(substring-after(foaf:Document/foaf:primaryTopic/@rdf:resource, '/AGS/'), '/', '')"/>
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
       <head>
         <meta content="text/html; charset=utf-8" http-equiv="content-type"/>
@@ -72,7 +73,9 @@
             <a href="{foaf:Document/dct:source[starts-with(@rdf:resource, 'http://geodaten.bayern.de/denkmal_static_data/externe_denkmalliste/')]/@rdf:resource}">Quelle</a>,
             Stand: <xsl:value-of select="substring(foaf:Document/dct:date,1,10)"/>,
             <a href="{foaf:Document/dct:spatial[starts-with(@rdf:resource, 'http://sws.geonames.org/')]/@rdf:resource}">🌐</a>,
-            <a href="http://dbpedia.org/page/{foaf:Document/rdfs:label}">DBPedia</a>,
+            <a href="http://dbpedia.org/page/{foaf:Document/rdfs:label}">🍮 DBPedia</a>,
+            <a title="Amtlicher Gemeindeschlüssel: {$AGS}" href="http://www.statistik-portal.de/Statistik-Portal/gemeindeverz.asp?G={$AGS}">🇩🇪 DeStatis</a>,
+            <a title="AGS => WikiData" href="https://query.wikidata.org/#SELECT ?item ?itemLabel WHERE %7B ?item wdt:P439 '{$AGS}' . %7D">🕸 WikiData (via AGS)</a>,
             <form action="../../../search" method="GET">
               <input id="aktennummer" name="aktennummer" type="search" size="15" placeholder="Aktennummer"/>
               <input type="submit" value="Los!"/>
