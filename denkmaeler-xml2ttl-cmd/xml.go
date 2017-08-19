@@ -150,7 +150,7 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 				case nil != m:
 					modified = time.Date(mustAtoi(m[3]), time.Month(mustAtoi(m[2])), mustAtoi(m[1]), 0, 0, 0, 0, tz)
 				case strings.HasPrefix(text.Value, "Seite "): // NOOP
-				case strings.HasPrefix(text.Value, "© Bayerisches Landesamt für Denkmalpflege"): // NOOP
+				case strings.HasPrefix(text.Value, "© Bayerisches Landesamt für"): // NOOP
 				default:
 					sep := " "
 					first, _ := utf8.DecodeRuneInString(text.Value[0:])

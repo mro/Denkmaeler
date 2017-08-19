@@ -19,7 +19,7 @@ cd "${PROG_NAME}-cmd"
 
 # go get -u "github.com/stretchr/testify"
 
-go fmt && go test -i
+go fmt && go test -i && go test
 
 env GOOS=linux GOARCH=amd64 go build -o "${PROG_NAME}-Linux-x86_64-${VERSION}"
 # http://dave.cheney.net/2015/08/22/cross-compilation-with-go-1-5
