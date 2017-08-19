@@ -93,18 +93,7 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 	aktenPat := regexp.MustCompile(`([DE]-(\d)-(\d{2})-(\d{3})-\d+)|([D]-\d-\d{4}-\d{4})`)
 
 	for _, page := range pdf.Page {
-		{
-			a := page.Text
-			sort.Slice(a, func(i, j int) bool {
-				if a[i].Top < a[j].Top {
-					return true
-				}
-				if a[i].Top > a[j].Top {
-					return false
-				}
-				return a[i].Left < a[j].Left
-			})
-		}
+		sort.Sort(page.Text)
 		for _, text := range page.Text {
 			// fmt.Printf("(%d,%d) f=%d b='%s' v='%s'\n", text.Top, text.Left, text.Font, text.Bold, text.Value)
 			switch text.Font {
@@ -205,9 +194,11 @@ type pdf2xml struct {
 	Page    []page   `xml:"page"`
 }
 
+type textSlice []text
+
 type page struct {
-	XMLName xml.Name `xml:"page"`
-	Text    []text   `xml:"text"`
+	XMLName xml.Name  `xml:"page"`
+	Text    textSlice `xml:"text"`
 }
 
 type text struct {
@@ -218,4 +209,20 @@ type text struct {
 	Font    int8     `xml:"font,attr"`
 	Bold    string   `xml:"b"`
 	Value   string   `xml:",chardata"` // http://stackoverflow.com/a/20600762
+}
+
+func (s textSlice) Len() int {
+	return len(s)
+}
+func (s textSlice) Less(i, j int) bool {
+	if s[i].Top < s[j].Top {
+		return true
+	}
+	if s[i].Top > s[j].Top {
+		return false
+	}
+	return s[i].Left < s[j].Left
+}
+func (s textSlice) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
 }
