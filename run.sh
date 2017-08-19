@@ -99,7 +99,7 @@ wait
 ## fetch and scrape PDF, turn into ttl and RDF
 ######################################################################
 
-xml2ttl="denkmaeler-xml2ttl-cmd/denkmaeler-xml2ttl"-*-*-"0.0.1"
+xml2ttl="denkmaeler-xml2ttl-cmd/denkmaeler-xml2ttl"-*-*-"0.0.2"
 [ -x ${xml2ttl} ] || { echo "I need the transformation tool, please run \$ sh build.sh" 1>&2 && exit 1; }
 
 for gemeinde in `ls -d build/??/?/??/??? | cut -d / -f2-`
