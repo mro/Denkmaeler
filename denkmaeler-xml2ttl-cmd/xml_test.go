@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2016 Marcus Rohrmoser, http://mro.name/~me
+// Copyright (c) 2016-2017 Marcus Rohrmoser, http://mro.name/~me
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -244,5 +244,33 @@ func TestFineFromRawPageBreakIssue2(t *testing.T) {
 		assert.Equal(t, "Engertalm", d.adresse[0], "soso")
 		assert.Equal(t, "Kaser der Engertalm, eingeschossiger überkämmter Blockbau auf Bruchsteinsockel, Flachsatteldach mit Legschindeldeckung, Firstpfette bez. 1801; südöstlich unterm Gernhorn, 965m Höhe.", d.beschreibung, "soso")
 		assert.Equal(t, "nachqualifiziert", d.verfahrensstand, "soso")
+	}
+}
+
+func TestFineFromRawWagingIssue4(t *testing.T) {
+	pdf, err := rawFromXmlFileName("testdata/189162.xml")
+	ds, mod, name, err := fineFromRaw(pdf)
+	assert.Nil(t, err, "soso")
+	assert.Equal(t, "2017-08-19T00:00:00+02:00", mod.Format(time.RFC3339), "huhu")
+	assert.Equal(t, "Waging a.See", name, "huhu")
+	// Equal.assert(t, "Regierungsbezirk Oberbayern", l.gemeinde.regierungsbezirk, "soso")
+	// assert.Equal(t, "Traunstein", l.gemeinde.landkreis, "soso")
+	// assert.Equal(t, "Übersee", l.gemeinde.gemeinde, "soso")
+	assert.Equal(t, 113, len(ds), "soso")
+	{
+		d := ds[0]
+		assert.Equal(t, "E-1-89-162-1", d.aktennummer, "soso")
+		assert.Equal(t, "09 1 89 162", d.gemeindeschlüssel, "soso")
+		assert.Equal(t, "Baudenkmäler", d.typ, "soso")
+		assert.Equal(t, 1, len(d.adresse), "soso")
+		assert.Equal(t, "Ensemble Ortskern Markt Waging", d.adresse[0], "soso")
+	}
+	{
+		d := ds[1]
+		assert.Equal(t, "D-1-89-162-1", d.aktennummer, "soso")
+		assert.Equal(t, "09 1 89 162", d.gemeindeschlüssel, "soso")
+		assert.Equal(t, "Baudenkmäler", d.typ, "soso")
+		assert.Equal(t, 1, len(d.adresse), "soso")
+		assert.Equal(t, "Bahnhofstraße 17", d.adresse[0], "soso")
 	}
 }

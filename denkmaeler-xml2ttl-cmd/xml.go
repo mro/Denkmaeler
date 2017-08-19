@@ -22,9 +22,9 @@ package main
 import (
 	"encoding/xml"
 	"io"
-	// "log"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -83,7 +83,6 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 	}
 	modifiedPat := regexp.MustCompile(`^Stand (\d+)\.(\d+)\.(\d{4})`)
 
-	var name string
 	var modified time.Time
 	var ret []denkmal
 	var d denkmal
@@ -94,29 +93,40 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 	aktenPat := regexp.MustCompile(`([DE]-(\d)-(\d{2})-(\d{3})-\d+)|([D]-\d-\d{4}-\d{4})`)
 
 	for _, page := range pdf.Page {
+		{
+			a := page.Text
+			sort.Slice(a, func(i, j int) bool {
+				if a[i].Top < a[j].Top {
+					return true
+				}
+				if a[i].Top > a[j].Top {
+					return false
+				}
+				return a[i].Left < a[j].Left
+			})
+		}
 		for _, text := range page.Text {
-			// fmt.Printf("%d b='%s' v='%s'\n", text.Font, text.Bold, text.Value)
+			// fmt.Printf("(%d,%d) f=%d b='%s' v='%s'\n", text.Top, text.Left, text.Font, text.Bold, text.Value)
 			switch text.Font {
 			case 1:
-				switch {
-				case 45 < text.Top && text.Top < 75:
+				if g.regierungsbezirk == "" {
 					if !strings.HasPrefix(text.Value, "Regierungsbezirk ") {
 						panic("oha")
 					}
 					g.regierungsbezirk = text.Value
-				case 75 < text.Top && text.Top < 110:
-					g.landkreis = text.Value
-				default:
-					g.gemeinde = text.Value
+				} else {
+					if g.landkreis == "" {
+						g.landkreis = text.Value
+					} else {
+						if g.gemeinde == "" {
+							g.gemeinde = text.Value
+						}
+					}
 				}
 			case 2, 5:
 				switch text.Bold {
 				case "Baudenkmäler", "Bodendenkmäler":
 					typ = text.Bold
-				case g.gemeinde:
-					name = g.gemeinde
-				default:
-					panic("87: " + text.Bold)
 				}
 			case 3:
 				m := aktenPat.FindStringSubmatch(text.Bold)
@@ -172,7 +182,7 @@ func fineFromRaw(pdf pdf2xml) ([]denkmal, time.Time, string, error) {
 		}
 	}
 	d.finish(&ret)
-	return ret, modified, name, nil
+	return ret, modified, g.gemeinde, nil
 }
 
 func rawFromXmlReader(xmlFile io.Reader) (pdf2xml, error) {
