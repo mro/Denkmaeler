@@ -98,6 +98,16 @@
             </xsl:apply-templates>
           </dl>
         </div>
+        <script type="text/javascript">
+/*
+  http://stackoverflow.com/questions/265774/programmatically-scroll-to-an-anchor-tag
+  document.getElementById('MyID').scrollIntoView(true)
+*/
+  window.addEventListener("DOMContentLoaded", function(event) {
+    // looks stupid but forces scroll (on Firefox):
+    document.location.hash = document.location.hash;
+  });
+        </script>
       </body>
     </html>
   </xsl:template>

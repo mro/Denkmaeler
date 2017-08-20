@@ -71,7 +71,7 @@ FOO
   }
 }
 
-rsync -aP static/assets "${dst}/"
+rsync -aP "static/" "${dst}/"
 
 wait
 
@@ -101,6 +101,9 @@ wait
 
 xml2ttl="denkmaeler-xml2ttl-cmd/denkmaeler-xml2ttl"-*-*-"0.0.2"
 [ -x ${xml2ttl} ] || { echo "I need the transformation tool, please run \$ sh build.sh" 1>&2 && exit 1; }
+
+# force refresh the oldest 20:
+# ls -ftr ./build/09/?/??/???/denkmal.pdf | head -n 20 | xargs rm
 
 for gemeinde in `ls -d build/??/?/??/??? | cut -d / -f2-`
 do
