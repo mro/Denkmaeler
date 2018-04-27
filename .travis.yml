@@ -2,15 +2,20 @@
 # http://docs.travis-ci.com/user/languages/go/#Default-Test-Script
 language: go
 go: # https://github.com/atotto/travisci-golang-example
-- 1.1
-- 1.8
-- tip
+- '1.1'
+- '1.2'
+- '1.9'
+- stable
+- master
 env:
   matrix:
   - GOOS=linux
-  - GOOS=darwin
   - GOOS=freebsd
   - GOOS=windows
+matrix:
+  allow_failures:
+  - go: '1.1'  # ../../stretchr/objx/security.go:10: undefined: sha1.Sum
+  - go: master
 branches:
   only: [master, develop]
 install:
